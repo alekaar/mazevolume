@@ -10,7 +10,7 @@
 
         <div style="text-align:center">
 
-            <video id="video1" width="420">
+            <video id="playVid" width="420">
                 <source src="[No Copyright Music] Someways - Nicolai Heidlas Music.mp4" type="video/mp4">
                 Your browser does not support HTML5 video.
             </video >
@@ -33,13 +33,12 @@
                         </div>
                         <p id="volPer">0</p>
                         <script type="text/javascript">
-                            var vid = document.getElementById("video1");
+                            var vid = document.getElementById("playVid");
                             var volp = document.getElementById("volPer");
 
                             vid.volume = 0;
                             var canvas;
-                            var ctx;
-                            var mid;
+                            var canTexture;
                             var dx = 5;
                             var dy = 5;
                             var x = 0;
@@ -50,7 +49,7 @@
                             var HEIGHT = 287;
                             var MIDDLE = WIDTH/2;
                             var img = new Image();
-                            var collision = 0;
+                            var coll = false;
 
                             function rect(x,y,w,h) {
                                 if(x > MIDDLE){
@@ -67,21 +66,21 @@
                                 }
                                 vid.volume = (volx+voly)/WIDTH;
                                 volp.innerHTML = "Volume: " + parseInt(((volx+voly)/WIDTH)*100) + "%";
-                                ctx.beginPath();
-                                ctx.rect(x,y,w,h);
-                                ctx.closePath();
-                                ctx.fill();
+                                canTexture.beginPath();
+                                canTexture.rect(x,y,w,h);
+                                canTexture.closePath();
+                                canTexture.fill();
                             }
 
                             function clear() {
-                                ctx.clearRect(0, 0, WIDTH, HEIGHT);
-                                ctx.drawImage(img, 0, 0);
+                                canTexture.clearRect(0, 0, WIDTH, HEIGHT);
+                                canTexture.drawImage(img, 0, 0);
                             }
 
                             function init() {
                                 vid.volume = 0;
                                 canvas = document.getElementById("canvas");
-                                ctx = canvas.getContext("2d");
+                                canTexture = canvas.getContext("2d");
                                 img.src = "maze.gif";
                                 return setInterval(draw, 10);
                             }
@@ -92,10 +91,10 @@
                                     if (y - dy > 0) {
                                         y -= dy;
                                         clear();
-                                        checkcollision();
-                                        if (collision == 1) {
+                                        checkcoll();
+                                        if (coll == true) {
                                             y += dy;
-                                            collision = 0;
+                                            coll = false;
                                         }
                                     }
                                 }
@@ -104,10 +103,10 @@
                                     if (y + dy < HEIGHT) {
                                         y += dy;
                                         clear();
-                                        checkcollision();
-                                        if (collision == 1) {
+                                        checkcoll();
+                                        if (coll == true) {
                                             y -= dy;
-                                            collision = 0;
+                                            coll = false;
                                         }
                                     }
                                 }
@@ -116,10 +115,10 @@
                                     if (x - dx > 0) {
                                         x -= dx;
                                         clear();
-                                        checkcollision();
-                                        if (collision == 1) {
+                                        checkcoll();
+                                        if (coll == true) {
                                             x += dx;
-                                            collision = 0;
+                                            coll = false;
                                         }
                                     }
                                 }
@@ -128,28 +127,28 @@
                                     if ((x + dx < WIDTH)){
                                         x += dx;
                                         clear();
-                                        checkcollision();
-                                        if (collision == 1){
+                                        checkcoll();
+                                        if (coll == true){
                                             x -= dx;
-                                            collision = 0;
+                                            coll = false;
                                         }
                                     }
                                 }
                             }
 
-                            function checkcollision() {
-                                var imgd = ctx.getImageData(x, y, 10, 10);
+                            function checkcoll() {
+                                var imgd = canTexture.getImageData(x, y, 10, 10);
                                 var pix = imgd.data;
                                 for (var i = 0; n = pix.length, i < n; i += 4) {
                                     if (pix[i] == 0) {
-                                        collision = 1;
+                                        coll = true;
                                     }
                                 }
                             }
 
                             function draw() {
                                 clear();
-                                ctx.fillStyle = "red";
+                                canTexture.fillStyle = "red";
                                 rect(x, y, 10,10);
                             }
 
