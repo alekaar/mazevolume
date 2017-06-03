@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css" title="external style sheet">
+        <script src="vidplayer.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    </head>
+    <body>
+
+        <div style="text-align:center">
+
+            <video id="video1" width="420">
+                <source src="[No Copyright Music] Someways - Nicolai Heidlas Music.mp4" type="video/mp4">
+                Your browser does not support HTML5 video.
+            </video >
+            <br>
+            <button onclick="playPause()">Play/Pause</button>
+            <button onclick="stopVideo()">Stop</button>
+            <button onclick="showModal()">Open Volume Control</button>
+            <!-- The Modal -->
+                <!-- The Modal -->
+                <div id="myModal" class="modal">
+
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <span onclick="closeModal()" class="close">&times;</span>
+                        <div>
+                            <canvas id="canvas" width="287" height="287">
+                                This text is displayed if your browser does not support HTML5 Canvas.
+                            </canvas>
+                        </div>
+                        <p id="volPer">0</p>
+                        <script type="text/javascript">
+                            var vid = document.getElementById("video1");
+                            var volp = document.getElementById("volPer");
+
+                            vid.volume = 0;
+                            var canvas;
+                            var ctx;
+                            var mid;
+                            var dx = 5;
+                            var dy = 5;
+                            var x = 0;
+                            var y = 0;
+                            var volx = x;
+                            var voly = y;
+                            var WIDTH = 287;
+                            var HEIGHT = 287;
+                            var MIDDLE = WIDTH/2;
+                            var img = new Image();
+                            var collision = 0;
+
+                            function rect(x,y,w,h) {
+                                if(x > MIDDLE){
+                                    volx = WIDTH-x;
+                                }
+                                else{
+                                    volx = x;
+                                }
+                                if(y > MIDDLE){
+                                    voly = HEIGHT-y;
+                                }
+                                else {
+                                    voly = y;
+                                }
+                                vid.volume = (volx+voly)/WIDTH;
+                                volp.innerHTML = "Volume: " + parseInt(((volx+voly)/WIDTH)*100) + "%";
+                                ctx.beginPath();
+                                ctx.rect(x,y,w,h);
+                                ctx.closePath();
+                                ctx.fill();
+                            }
+
+                            function clear() {
+                                ctx.clearRect(0, 0, WIDTH, HEIGHT);
+                                ctx.drawImage(img, 0, 0);
+                            }
+
+                            function init() {
+                                vid.volume = 0;
+                                canvas = document.getElementById("canvas");
+                                ctx = canvas.getContext("2d");
+                                img.src = "maze.gif";
+                                return setInterval(draw, 10);
+                            }
+
+                            function doKeyDown(evt){
+                                if (evt.keyCode == 38) {
+                                    /* Up arrow was pressed */
+                                    if (y - dy > 0) {
+                                        y -= dy;
+                                        clear();
+                                        checkcollision();
+                                        if (collision == 1) {
+                                            y += dy;
+                                            collision = 0;
+                                        }
+                                    }
+                                }
+
+                                else if (evt.keyCode ==  40) {  /* Down arrow was pressed */
+                                    if (y + dy < HEIGHT) {
+                                        y += dy;
+                                        clear();
+                                        checkcollision();
+                                        if (collision == 1) {
+                                            y -= dy;
+                                            collision = 0;
+                                        }
+                                    }
+                                }
+
+                                else if (evt.keyCode ==  37) {  /* Left arrow was pressed */
+                                    if (x - dx > 0) {
+                                        x -= dx;
+                                        clear();
+                                        checkcollision();
+                                        if (collision == 1) {
+                                            x += dx;
+                                            collision = 0;
+                                        }
+                                    }
+                                }
+
+                                 else if (evt.keyCode ==  39){  /* Right arrow was pressed */
+                                    if ((x + dx < WIDTH)){
+                                        x += dx;
+                                        clear();
+                                        checkcollision();
+                                        if (collision == 1){
+                                            x -= dx;
+                                            collision = 0;
+                                        }
+                                    }
+                                }
+                            }
+
+                            function checkcollision() {
+                                var imgd = ctx.getImageData(x, y, 10, 10);
+                                var pix = imgd.data;
+                                for (var i = 0; n = pix.length, i < n; i += 4) {
+                                    if (pix[i] == 0) {
+                                        collision = 1;
+                                    }
+                                }
+                            }
+
+                            function draw() {
+                                clear();
+                                ctx.fillStyle = "red";
+                                rect(x, y, 10,10);
+                            }
+
+                            init();
+                            window.addEventListener('keydown',doKeyDown,true);
+                        </script>
+                    </div>
+                </div>
+            </div>
+
+
+           <!-- <input type="range" onchange="setVolume()" id="volume1" min=0 max=1 step=0.01 value=0>-->
+
+            <br>
+        </div>
+    </body>
+</html>
